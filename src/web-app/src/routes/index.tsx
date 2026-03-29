@@ -1,8 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
-import { getMockJobs, type JobCardDto } from "../lib/jobs";
+import { fetchGraphQL } from "../graphql/client";
 import "../styles/home.css";
+
+export type JobCardDto = {
+    id: string;
+    title: string;
+    companyName: string;
+    location: string;
+    companyLogoUrl: string;
+    workingModel: "Remote" | "Hybrid" | "Onsite";
+    timeSincePosted: string;
+};
+
+const HOME_JOBS_QUERY = `
+  query HomeJobs {
+    homeJobs {
+      id
+      title
+      companyName
+      location
+      companyLogoUrl
+      workingModel
+      timeSincePosted
+    }
+  }
+`;
 
 // Do not put browser-only code directly in the render path of the component.
 // e.g. localStorage, sessionStorage, window, document
@@ -89,22 +112,15 @@ const HomePage = () => {
     );
 };
 
-// This is a server function that simulates fetching job data from a server.
-// In a real application, this would likely call your ASP.NET backend / GraphQL API.
-const getHomeJobs = createServerFn({ method: "GET" }).handler(
-    async (): Promise<JobCardDto[]> => {
-        await new Promise((resolve) => setTimeout(resolve, 150));
-        return getMockJobs();
-    },
-);
-
 // This is the route definition for the home page.
 // It uses the loader to fetch job data from the server function and passes it to the component.
 export const Route = createFileRoute("/")({
     ssr: true,
     component: HomePage,
     loader: async () => {
-        const jobs = await getHomeJobs();
-        return { jobs };
+        const data = await fetchGraphQL<{ homeJobs: JobCardDto[] }>(
+            HOME_JOBS_QUERY,
+        );
+        return { jobs: data.homeJobs };
     },
 });
