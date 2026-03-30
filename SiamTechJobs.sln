@@ -31,6 +31,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "contracts", "contracts", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "src\dotnet\contracts\Contracts.csproj", "{98527DC8-1528-4AF4-9168-F860AF332D0B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,5 +136,8 @@ Global
 		{27F2E4E2-F232-4CA9-B42B-3430CD7C3DF9} = {9AEC6508-9497-27D4-01FE-29BD0671C31D}
 		{3CB232BF-1D9A-D42D-B8D4-D852812FD0EC} = {204ECC8A-4C8C-06A8-7EEC-D568B118FA74}
 		{98527DC8-1528-4AF4-9168-F860AF332D0B} = {3CB232BF-1D9A-D42D-B8D4-D852812FD0EC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B0A9A567-40E9-4C4F-A99F-C5D73A74B661}
 	EndGlobalSection
 EndGlobal
