@@ -1,17 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
-import { getMockJobs, type JobCardDto } from "../lib/jobs";
+import { fetchGraphQL } from "../graphql/client";
 import "../styles/home.css";
+import { WorkingModel, JobCardDto } from "../features/jobs/types";
+import { HOME_JOBS_QUERY } from "../features/jobs/queries";
+import { formatPostedAt } from "../features/jobs/utils";
 
 // Do not put browser-only code directly in the render path of the component.
 // e.g. localStorage, sessionStorage, window, document
 const HomePage = () => {
     const { jobs } = Route.useLoaderData();
     const [mounted, setMounted] = useState(false);
-    const [selectedModel, setSelectedModel] = useState<
-        "All" | "Remote" | "Hybrid" | "Onsite"
-    >("All");
+    const [selectedModel, setSelectedModel] = useState<WorkingModel | "All">(
+        "All",
+    );
 
     const filteredJobs = useMemo(() => {
         if (selectedModel === "All") return jobs;
@@ -79,7 +81,7 @@ const HomePage = () => {
                             </div>
 
                             <p className="job-time">
-                                Posted {job.timeSincePosted}
+                                Posted {formatPostedAt(job.postedAt)}
                             </p>
                         </div>
                     </article>
@@ -89,22 +91,15 @@ const HomePage = () => {
     );
 };
 
-// This is a server function that simulates fetching job data from a server.
-// In a real application, this would likely call your ASP.NET backend / GraphQL API.
-const getHomeJobs = createServerFn({ method: "GET" }).handler(
-    async (): Promise<JobCardDto[]> => {
-        await new Promise((resolve) => setTimeout(resolve, 150));
-        return getMockJobs();
-    },
-);
-
 // This is the route definition for the home page.
 // It uses the loader to fetch job data from the server function and passes it to the component.
 export const Route = createFileRoute("/")({
     ssr: true,
     component: HomePage,
     loader: async () => {
-        const jobs = await getHomeJobs();
-        return { jobs };
+        const data = await fetchGraphQL<{ homeJobs: JobCardDto[] }>(
+            HOME_JOBS_QUERY,
+        );
+        return { jobs: data.homeJobs };
     },
 });
