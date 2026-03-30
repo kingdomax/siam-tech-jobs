@@ -2,39 +2,18 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { fetchGraphQL } from "../graphql/client";
 import "../styles/home.css";
-
-export type JobCardDto = {
-    id: string;
-    title: string;
-    companyName: string;
-    location: string;
-    companyLogoUrl: string;
-    workingModel: "Remote" | "Hybrid" | "Onsite";
-    timeSincePosted: string;
-};
-
-const HOME_JOBS_QUERY = `
-  query HomeJobs {
-    homeJobs {
-      id
-      title
-      companyName
-      location
-      companyLogoUrl
-      workingModel
-      timeSincePosted
-    }
-  }
-`;
+import { WorkingModel, JobCardDto } from "../features/jobs/types";
+import { HOME_JOBS_QUERY } from "../features/jobs/queries";
+import { formatPostedAt } from "../features/jobs/utils";
 
 // Do not put browser-only code directly in the render path of the component.
 // e.g. localStorage, sessionStorage, window, document
 const HomePage = () => {
     const { jobs } = Route.useLoaderData();
     const [mounted, setMounted] = useState(false);
-    const [selectedModel, setSelectedModel] = useState<
-        "All" | "Remote" | "Hybrid" | "Onsite"
-    >("All");
+    const [selectedModel, setSelectedModel] = useState<WorkingModel | "All">(
+        "All",
+    );
 
     const filteredJobs = useMemo(() => {
         if (selectedModel === "All") return jobs;
@@ -102,7 +81,7 @@ const HomePage = () => {
                             </div>
 
                             <p className="job-time">
-                                Posted {job.timeSincePosted}
+                                Posted {formatPostedAt(job.postedAt)}
                             </p>
                         </div>
                     </article>
